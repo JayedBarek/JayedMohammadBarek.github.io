@@ -1,5 +1,11 @@
 // GitHub username
-const githubUsername = 'your-github-username';
+const githubUsername = 'JayedBarek';
+
+// Repositories to exclude from display
+const excludedRepos = [
+    'JayedMohammadBarek.github.io',
+    'jayedbarek.github.io'
+];
 
 // Function to fetch GitHub repositories
 async function fetchGitHubRepos() {
@@ -42,7 +48,7 @@ function createProjectCard(repo) {
             <p>${description}</p>
             <div class="tech-stack">
                 ${technologies.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
-                ${repo.language ? `<span class="tech-tag">${repo.language}</span>` : ''}
+                ${repo.language ? `<span class="tech-tag primary">${repo.language}</span>` : ''}
             </div>
             <div class="project-links">
                 <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">View on GitHub</a>
@@ -58,11 +64,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const repos = await fetchGitHubRepos();
     
     if (repos.length > 0) {
-        projectsContainer.innerHTML = repos
-            .filter(repo => !repo.fork) // Filter out forked repositories
-            .map(repo => createProjectCard(repo))
-            .join('');
-    } else {
-        projectsContainer.innerHTML = '<p>No repositories found</p>';
+        const filteredRepos = repos
+            .filter(repo => !repo.fork && !repo.archived && !excludedRepos.includes(repo.name)) // Filter out forked, archived, and excluded repositories
+            .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)); // Sort by last updated
+        
+        if (filteredRepos.length > 0) {
+            projectsContainer.innerHTML = filteredRepos
+                .map(repo => createProjectCard(repo))
+                .join('');
+        } else {
+            projectsContainer.innerHTML = '<p>No repositories to display</p>';
+        }
     }
 });
