@@ -8,8 +8,13 @@ const excludedRepos = [
     'jayedmohammadbarek.github.io'
 ].map(name => name.toLowerCase());
 
-// Priority repositories that should be displayed first
-const priorityRepos = ['Project-Reports'];
+// Define the exact order of repositories
+const repoOrder = [
+    'CSCE5210-Introduction-to-AI',
+    'CSCE5150-Analysis-of-Computer-Algorithm',
+    'CSCE5350-Fundamental-of-Database',
+    'Project-Reports'
+];
 
 // Function to fetch GitHub repositories
 async function fetchGitHubRepos() {
@@ -45,10 +50,9 @@ async function fetchGitHubRepos() {
 function createProjectCard(repo) {
     const technologies = repo.topics || [];
     const description = repo.description || 'No description available';
-    const isPriority = priorityRepos.includes(repo.name);
     
     return `
-        <div class="project-card${isPriority ? ' priority-project' : ''}">
+        <div class="project-card">
             <h3>${repo.name}</h3>
             <p>${description}</p>
             <div class="tech-stack">
@@ -77,13 +81,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                        !excludedRepos.includes(repoName);
             })
             .sort((a, b) => {
-                // First, sort by priority
-                const aPriority = priorityRepos.includes(a.name);
-                const bPriority = priorityRepos.includes(b.name);
-                if (aPriority !== bPriority) {
-                    return bPriority ? 1 : -1;
+                // Get the index of each repo in the order array
+                const indexA = repoOrder.indexOf(a.name);
+                const indexB = repoOrder.indexOf(b.name);
+                
+                // If both repos are in the order array, sort by their position
+                if (indexA !== -1 && indexB !== -1) {
+                    return indexA - indexB;
                 }
-                // Then by update date
+                
+                // If only one repo is in the order array, prioritize it
+                if (indexA !== -1) return -1;
+                if (indexB !== -1) return 1;
+                
+                // For repos not in the order array, sort by update date
                 return new Date(b.updated_at) - new Date(a.updated_at);
             });
         
