@@ -5,8 +5,11 @@ const githubUsername = 'JayedBarek';
 const excludedRepos = [
     'JayedMohammadBarek.github.io',
     'jayedbarek.github.io',
-    'jayedmohammadbarek.github.io'  // Adding another possible variation
+    'jayedmohammadbarek.github.io'
 ].map(name => name.toLowerCase());
+
+// Priority repositories that should be displayed first
+const priorityRepos = ['Project-Reports'];
 
 // Function to fetch GitHub repositories
 async function fetchGitHubRepos() {
@@ -42,9 +45,10 @@ async function fetchGitHubRepos() {
 function createProjectCard(repo) {
     const technologies = repo.topics || [];
     const description = repo.description || 'No description available';
+    const isPriority = priorityRepos.includes(repo.name);
     
     return `
-        <div class="project-card">
+        <div class="project-card${isPriority ? ' priority-project' : ''}">
             <h3>${repo.name}</h3>
             <p>${description}</p>
             <div class="tech-stack">
@@ -72,7 +76,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                        !repo.archived && 
                        !excludedRepos.includes(repoName);
             })
-            .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+            .sort((a, b) => {
+                // First, sort by priority
+                const aPriority = priorityRepos.includes(a.name);
+                const bPriority = priorityRepos.includes(b.name);
+                if (aPriority !== bPriority) {
+                    return bPriority ? 1 : -1;
+                }
+                // Then by update date
+                return new Date(b.updated_at) - new Date(a.updated_at);
+            });
         
         if (filteredRepos.length > 0) {
             projectsContainer.innerHTML = filteredRepos

@@ -131,6 +131,11 @@ section {
     font-size: 0.9em;
 }
 
+.tech-tag.primary {
+    background: #007bff;
+    color: white;
+}
+
 .project-links {
     display: flex;
     gap: 10px;
@@ -157,6 +162,15 @@ section {
     justify-content: center;
     gap: 20px;
     padding: 20px;
+}
+
+.priority-project {
+    border: 2px solid #007bff;
+    transform: scale(1.02);
+}
+
+.priority-project:hover {
+    transform: scale(1.05);
 }
 
 .about-content {
