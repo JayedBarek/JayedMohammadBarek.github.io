@@ -1,11 +1,12 @@
 // GitHub username
 const githubUsername = 'JayedBarek';
 
-// Repositories to exclude from display
+// Repositories to exclude from display (case-insensitive)
 const excludedRepos = [
     'JayedMohammadBarek.github.io',
-    'jayedbarek.github.io'
-];
+    'jayedbarek.github.io',
+    'jayedmohammadbarek.github.io'  // Adding another possible variation
+].map(name => name.toLowerCase());
 
 // Function to fetch GitHub repositories
 async function fetchGitHubRepos() {
@@ -65,8 +66,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (repos.length > 0) {
         const filteredRepos = repos
-            .filter(repo => !repo.fork && !repo.archived && !excludedRepos.includes(repo.name)) // Filter out forked, archived, and excluded repositories
-            .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)); // Sort by last updated
+            .filter(repo => {
+                const repoName = repo.name.toLowerCase();
+                return !repo.fork && 
+                       !repo.archived && 
+                       !excludedRepos.includes(repoName);
+            })
+            .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
         
         if (filteredRepos.length > 0) {
             projectsContainer.innerHTML = filteredRepos
