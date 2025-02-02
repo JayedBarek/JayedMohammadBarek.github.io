@@ -1,5 +1,5 @@
 // GitHub username
-const githubUsername = 'JayedBarek';
+const githubUsername = 'your-github-username';
 
 // Function to fetch GitHub repositories
 async function fetchGitHubRepos() {
